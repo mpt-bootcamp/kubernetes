@@ -1,35 +1,35 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: hello-kubernetes-first
+  name: nginx-one
 spec:
   type: ClusterIP
   ports:
   - port: 80
     targetPort: 8080
   selector:
-    app: hello-kubernetes-first
+    app: ngnix-one
+
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: hello-kubernetes-first
+  name: nginx-one
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: hello-kubernetes-first
+      app: nginx-one
   template:
     metadata:
       labels:
-        app: hello-kubernetes-first
+        app: nginx-one
     spec:
       containers:
-      - name: hello-kubernetes
-        image: paulbouwer/hello-kubernetes:1.5
+      - name: nginx-one
+        image: mptbootcamp/ngnix:latest
         ports:
         - containerPort: 8080
         env:
         - name: MESSAGE
           value: Hello from the first deployment!
-

@@ -1,4 +1,4 @@
-# nginx_deploy.yaml
+# nginx-deploy.yaml
 kind: Deployment
 apiVersion: apps/v1
 metadata:
@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: nginx
-        image: nginx:1.15
+        image: mptbootcamp/nginx:latest
         ports:
         - containerPort: 80
 

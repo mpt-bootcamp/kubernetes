@@ -1,4 +1,4 @@
-# nginx_svc.yaml
+# nginx-svc.yaml
 kind: Service
 apiVersion: v1
 
