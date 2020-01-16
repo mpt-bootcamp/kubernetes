@@ -12,7 +12,7 @@ spec:
       - backend:
           serviceName: nginx-one
           servicePort: 80
-  - host: nginx1.console1.missionpeaktechnologies.com
+  - host: nginx2.console1.missionpeaktechnologies.com
     http:
       paths:
       - backend:

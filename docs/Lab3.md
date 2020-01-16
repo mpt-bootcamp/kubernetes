@@ -18,13 +18,24 @@ Need to create NS record for lab.missionpeaktechnologies.com in parent domain mi
 aws iam list-instance-profiles
 kops get cluster --state=s3://mpt-kops
 
+
+Note, need to fix the permission in the provision script
+sudo chown -R student1: .ssh
+
+```console
+cd ~/.ssh
 ssh-keygen -t rsa -b 4096 -C "${USER}" -N "" -f id_rsa
+cd ~/bootcamp/kubernetes
+```
 
 
 Step 1 - Creating the cluster configuration
+```console
 kops create cluster --name=student1.lab.missionpeaktechnologies.com --state=s3://mpt-kops --zones=us-east-1a
+```
 
-----
+The output should look like below:
+```
 I1230 17:05:12.043924   29162 create_cluster.go:517] Inferred --cloud=aws from zone "us-east-1a"
 I1230 17:05:12.424560   29162 subnets.go:184] Assigned CIDR 172.20.32.0/19 to subnet us-east-1a
 I1230 17:05:15.148071   29162 create_cluster.go:1496] Using SSH public key: /Users/issacl/.ssh/id_rsa.pub
@@ -32,15 +43,18 @@ Previewing changes that will be made:
 
 
 error doing DNS lookup for NS records for "lab.missionpeaktechnologies.com": lookup lab.missionpeaktechnologies.com on 192.168.200.201:53: no such host
-----
+```
 
 Step2 - Edit cluster, node, master
 
 kops edit cluster student1.lab.missionpeaktechnologies.com --state=s3://mpt-kops
 kops edit ig --name=student1.lab.missionpeaktechnologies.com --state=s3://mpt-kops nodes
 kops edit ig --name=student1.lab.missionpeaktechnologies.com --state=s3://mpt-kops master-us-east-1a
+
+
 kops update cluster student1.lab.missionpeaktechnologies.com --state=s3://mpt-kops --yes
----
+```
+
 Cluster is starting.  It should be ready in a few minutes.
 
 Suggestions:
@@ -127,6 +141,12 @@ $ kubectl config view
 
 Step 5 - Deploy an Nginx Server
 
+student1@console1:~/bootcamp/kubernetes$ kubectl create -f nginx/nginx-deploy.yaml
+deployment.apps/nginx created
+student1@console1:~/bootcamp/kubernetes$ kubectl create -f nginx/nginx-svc.yaml
+service/nginx-elb created
+
+
 $ kubectl create -f nginx_deploy.yaml
 
 $ kubectl get pod
@@ -208,10 +228,16 @@ nodes			Node	t2.medium	2	2	us-east-1a
 
 
 Delete cluster
+kops get cluster --state=s3://mpt-kops
 $ kops delete cluster ${NAME} --yes 
+
+kops delete cluster student1.lab.missionpeaktechnologies.com --state=s3://mpt-kops--yes
+
 
 Kubernetes Configuration
 https://kubernetes.io/docs/tasks/access-application-cluster/configure-access-multiple-clusters/
+
+
 
 
 

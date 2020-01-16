@@ -7,7 +7,7 @@ This purpose of this exercise is show a traditional way to deploy Nginx on a bar
 1. From your console machine's terminal window, SSH into the worker VM to install Nginx.
 
 ```console
-ssh worker<n>.mpt.local
+ssh -i ~/.ssh/id_rsa_ubuntu ubuntu@worker1.lab.mpt.local
 sudo apt-get update
 sudo apt-get install nginx
 sudo systemctl status nginx
@@ -67,3 +67,18 @@ From your browser, open the following URL
 http://console<n>.missionpeaktechnologies.com:8080
 ```
 
+
+### Execise 4 - Cleanup
+
+
+```consoel
+docker container ls -a
+docker container stop nginx
+docker container ls -a
+docker container prune 
+
+docker image ls -a
+docker image rm <image id>
+docker image prune -a -f
+docker image ls -a
+```

@@ -2,7 +2,6 @@
 # This supports shell glob matching, relative path matching, and
 # negation (prefixed with !). Only one pattern per line.
 .DS_Store
-
 # Common VCS dirs
 .git/
 .gitignore
@@ -11,32 +10,13 @@
 .hg/
 .hgignore
 .svn/
-
 # Common backup files
 *.swp
 *.bak
 *.tmp
 *~
-
 # Various IDEs
 .project
 .idea/
 *.tmproj
 .vscode/
-
-# Ingore files
-*.log
-*.retry
-
-# Ignore Vagrant data
-.vagrant
-
-# Gradle
-.gradle
-/build/
-gradle-app.setting
-!gradle-wrapper.jar
-.gradletasknamecache
-
-# ignore istioctl
-istioctl

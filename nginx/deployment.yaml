@@ -1,4 +1,4 @@
-# nginx-deploy.yaml
+# deployment.yaml
 kind: Deployment
 apiVersion: apps/v1
 metadata:
