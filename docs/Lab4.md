@@ -4,6 +4,7 @@ https://developer.ibm.com/blogs/kubernetes-helm-3/
 https://github.com/alexellis/helm3-expressjs-tutorial
 https://helm.sh/docs/intro/using_helm/
 https://learnk8s.io/kubernetes-ingress-api-gateway
+https://github.com/IBM/helm101/tree/master/tutorial
 
 
 A Helm chart is just a collection of files inside of a directory. For example,
