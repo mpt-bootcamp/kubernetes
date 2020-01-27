@@ -212,21 +212,31 @@ http://console<n>.missionpeaktechnologies.com:<exposed-port-nginx>
 http://console<n>.missionpeaktechnologies.com:<exposed-port-assets-manager>
 ```
 
-Step 7 - Get Admin password and Token
+### Exercise 8 - Stopping Pods, Deleting Services and Cluster
 
-$ kops get secrets kube --type secret -o plaintext --state=s3://mpt-kops
-$ kops get secrets admin --type secret -oplaintext --state=s3://mpt-kops
+Stopping and deleting the pods and serivces are no different than Minikube.
 
+1. Stopping and deleting the pods and services
+```console
+sudo kubectl get services 
+sudo kubectl delete service assets-manager
+sudo kubectl delete service nginx
+sudo kubectl get pods
+sudo kubectl delete pod <nginx-pod-name>
+sudo kubectl delete pod <assets-manager-pod-name>
+```
 
+2. To delete the cluster,
 
+```console
+kops delete cluster student<n>.lab.missionpeaktechnologies.com
+```
 
-master-us-east-1a	Master	c4.large	1	1	us-east-1a
-nodes			Node	t2.medium	2	2	us-east-1a
+### Conclusion
 
+In this lab, we walked through the steps to create a production Kubernetes cluster using Kops. Using the **kubectl** CLI, you deployed the Nginx and Java applications using the manifest files the same way as you deployed to your local Minikube cluster. 
 
-Delete cluster
-kops get cluster --state=s3://mpt-kops
-$ kops delete cluster ${NAME} --yes 
+In the last last lab, we will learn a different way to package, deploy and scale container applications using Helm.
 
 
 
