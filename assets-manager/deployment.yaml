@@ -1,0 +1,23 @@
+# deployment.yaml
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: assets-manager
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: assets-manager
+
+  template:
+    metadata:
+      labels:
+        app: assets-manager
+    spec:
+      containers:
+      - name: nginx
+        image: mptbootcamp/assets-manager:latest
+        ports:
+        - containerPort: 9000
+

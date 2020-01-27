@@ -1,66 +1,203 @@
 ## Lab2 - Using Minikube to create a Kubernetes cluster
 
-Minikube is a tool that lets you run a Kubernetes cluster locally. Minikube runs a single-node Kubernetes cluster inside a Virtual Machine (VM) on your laptop. 
+In this lab, you will learn how to use Minikube to create a local Kubernetes cluster so that you can test your container deployment. Minikube runs a single-node Kubernetes cluster inside a Virtual Machine (VM) or your laptop. 
 
-Minikube requires to start as a root for Linux(Ubuntu. In this bootcamp, the following Kubernetes tools are already installed:
+In this class, we already installed Minikube in the console machine. You can find intructions how to install Minikube [here](https://kubernetes.io/docs/tasks/tools/install-minikube/).
 
-1. Minikube
-2. Kutectl
-3. Kops
-4. Helm
-5. AWS CLI
 
-### Exercise 1 - Start a minikube cluster
+### Exercise 1 - Using Minikube CLI
 
-From the console terminal window, execute the following commands to start Minikute and get information about it.
+Once Minikube is installed you can use the command line interface (CLI) to
+
+* Start a cluster
+* Show the status
+* Configure the cluster
+* Stop the cluster
+* Delete the cluster
+
+
+1. From the console terminal window, execute the following commands list the CLI commands and help
+
+```console
+sudo minikube --help
+sudo minikube start -help
+sudo minkkube config --help
+sudo minkiube config set --help
+```
+
+2. To create or start a local cluster, 
 
 ```console
 sudo minikube start --vm-driver=none
 ```
 
-This these commands not work with vm-driver=none in linux. Instead use the standard docker command
-sudo minikube ssh
-minikube docker-env
-minikube ip
+Here the *--vm-driver* option is set to *none* to tell Minikube to use the installed Docker engine instead of a hypervisor. Note, on MacOS, set the driver to *hyperkit* instead of *none*.
+
+3. To show the cluster status or get information, use these commands:
+
+```console
+sudo minikube version
+sudo minikube status
+sudo minikube ip
+sudo minikube docker-env
+sudo minikube logs
+```
 
 
-Once started, you can interact with your local cluster using kubectl, just like any other Kubernetes cluster.
+### Exercixse 2 - Creating a Nginx Pod
+
+1. In this exercise, you create a Kubernetes Pod that contains our customized nginx container application, mptbootcamp/nginx, which we already push to the public Docker hub registry.
+
+```console
+cd ~/bootcamp/kubernetes
+sudo kubectl create -f ./nginx/deployment.yaml
+```
+
+2. To see the deployment rollout status, run
+
+```console
+sudo kubectl rollout status deployment.apps/nginx
+sudo kubectl get deployment
+```
+
+3. To see the running pod(s), run
+
+```console
+sudo kubectl get pods
+sudo kubectl get pods --show-labels
+```
+
+Now, let review the Kubernetes Deployment manifest file, `./nginx/deployment.yaml`, that is pre-defined to create the pod.
+
+```
+# deployment.yaml
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: nginx
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: mptbootcamp/nginx:latest
+        ports:
+        - containerPort: 80
+```
+
+Exercuse 2 - Exposing the Nginx Pod Service
+
+By default, the Pod is only accessible by its internal IP address within the Kubernetes cluster. To make the pod accessible from outside, you have to expose the Pod as a Kubernetes Service using the pre-defined manifest file.
+
+**./nginx/service.yaml**
+```
+# service.yaml
+kind: Service
+apiVersion: v1
+
+metadata:
+  name: nginx
+  namespace: default
+
+spec:
+  type: NodePort
+  selector:
+    app: nginx
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 80
+```
+
+1. To create the service, run
+```console
+cd ~/bootcamp/kubernetes
+sudo kubectl create -f ./nginx/service.yaml
+```
+
+2. View the serivce just dreated.
+```console
+sudo kubectl get services
+```
+
+Note the target port (8080) exposed is 31262 in this example. You will use this port the the Minikube cluster IP to access the Ngnix pod.
+
+```
+NAME         TYPE        CLUSTER-IP    EXTERNAL-IP   PORT(S)          AGE
+kubernetes   ClusterIP   10.96.0.1     <none>        443/TCP          3h21m
+nginx        NodePort    10.96.75.92   <none>        8080:31262/TCP   58s
+```
+
+With the exposed port and the cluster IP, open the URL from the browser.
+
+```
+http://console<n>.missionpeaktechnologies.com:<exposed-port>
+```
 
 
-### Exercixse 2 - 
+### Exercise 3 - Creating the Java Application Pod 
 
-Exposing a service as a NodePort
+Let's repeat the steps in Exercise 2 to deploy a Java application pod, assets-manager.
 
-kubectl expose deployment nginx --type=NodePort --port=8080
+```console
+cd ~/bootcamp/kubernetes
+sudo kubectl create -f ./assets-manager/deployment.yaml
+sudo kubectl create -f ./assets-manager/service.yaml
+sudo kubectl get pods
+sudo kubectl get services
+```
 
-minikube makes it easy to open this exposed endpoint in your browser:
+Note, the exposed service port, like the Nginx pod. Open the URL to access the Java application.
 
-minikube service nginx
-
-Start a second local cluster (note: This will not work if minikube is using the bare-metal/none driver):
-
-minikube start -p minikube2
-
-Stop your local cluster:
-
-minikube stop
-
-Delete your local cluster:
-
-minikube delete
-
-Delete all local clusters and profiles
-
-minikube delete --all
+```
+http://console<n>.missionpeaktechnologies.com:<exposed-port>
+```
 
 
 
-###
-On AWS EC2
+### Exercise 4 - Removing Services and Pods
 
-student2@console2:~/bootcamp/kubernetes$ sudo kubectl get services
-NAME         TYPE           CLUSTER-IP     EXTERNAL-IP   PORT(S)        AGE
-kubernetes   ClusterIP      10.96.0.1      <none>        443/TCP        10m
-nginx-elb    LoadBalancer   10.96.35.117   <pending>     80:31763/TCP   6m2s
+1. To stop a pod, you can set the replicas count to 0. For exmaple,
 
-http://console2.missionpeaktechnologies.com:31763
+```console
+sudo kubectl scale --replicas=0 deployment/assets-manager
+sudo kubectl get pods
+```
+
+You should see the **STATUS** change Terminating, or not show up once it is terminated.
+
+2. To delete the rest of services and pods, run
+
+```console
+sudo kubectl get services 
+sudo kubectl delete service assets-manager
+sudo kubectl delete service nginx
+sudo kubectl get pods
+sudo kubectl delete pod <pod-name>
+```
+
+### Exercise 5 - Deleting the Local Minikube Cluster
+
+When you are done with the cluster, you can run the delete command to remove the local custer.
+
+```console
+sudo minikube status
+sudo minikube delete
+````
+
+### Conclusion
+
+In this lab, you learn how to create and delete a local Kubernetes cluster using Minikube. You also learn how to create pods and services using **kubectl** CLI and manifest files.
+
+In the next lab, we will create a production Kubernetes cluster in AWS using the **kops** CLI.
+
+
