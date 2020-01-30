@@ -1,0 +1,23 @@
+# deployment.yaml
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: nginx
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: mptbootcamp/nginx:latest
+        ports:
+        - containerPort: 80
+

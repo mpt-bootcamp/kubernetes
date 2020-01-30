@@ -90,6 +90,15 @@ cat assets-manager/Dockerfile
 
 As you can see in the Dockerfile, there is not much different creating a Java application image than the simple Nginx application.
 
+#### Tag an image for a private repository
+To push an image to a private registry and not the central Docker registry you must tag it with the registry hostname and port (if needed).
+
+```
+1. docker login -u <username> -p <password> <https://private-registry-url>
+2. docker build -t <tag:version>
+3. docker tag <tag:version> <https://private-registry-url>/<tag:version>
+4. docker pull <https://private-registry-url>/<tag:version>
+```
 
 ### Exercise 3 - Running a containerized application.
 

@@ -1,5 +1,19 @@
 ## Lab3 - Creating a Production Kubernetes Cluster using Kops
 
+https://kubernetes.io/docs/home/
+
+
+Kops allows deployment of highly available Kubernetes clusters on AWS and Google (GCP) clouds. It doesn't yet support on-premise infrastructure like VMware or OpenStack. For on prem deployment, you can use the **kubeadm** toolkit.
+
+#### Key Features
+
+* Deploy clusters to existing virtual private clouds (VPC) or create a new VPC from scratch
+* Supports public & private topologies
+* Provisions single or multiple master clusters
+* Configurable bastion machines for SSH access to individual cluster nodes
+* Rolling cluster updates
+
+
 In this lab, we will walk through the steps to spin up a Kubernetes cluster in AWS using Kops. To use Kops, we already:
 
 1. Installed kops and kubectl
