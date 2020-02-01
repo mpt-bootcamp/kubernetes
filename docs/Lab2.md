@@ -39,7 +39,6 @@ Here the *--vm-driver* option is set to *none* to tell Minikube to use the insta
 sudo minikube version
 sudo minikube status
 sudo minikube ip
-sudo minikube docker-env
 sudo minikube logs
 ```
 
@@ -133,14 +132,14 @@ Note the target port (8080) exposed is 31262 in this example. You will use this 
 
 ```
 NAME         TYPE        CLUSTER-IP    EXTERNAL-IP   PORT(S)          AGE
-kubernetes   ClusterIP   10.96.0.1     <none>        443/TCP          3h21m
-nginx        NodePort    10.96.75.92   <none>        8080:31262/TCP   58s
+kubernetes       ClusterIP   10.96.0.1      <none>        443/TCP          12m
+nginx            NodePort    10.96.53.91    <none>        8080:31034/TCP   9m37s
 ```
 
-With the exposed port and the cluster IP, open the URL from the browser.
+With the exposed port and the cluster IP, open the URL from the browser. For example
 
 ```
-http://console<n>.missionpeaktechnologies.com:<exposed-port>
+http://console1.missionpeaktechnologies.com:31034/
 ```
 
 
@@ -156,10 +155,19 @@ sudo kubectl get pods
 sudo kubectl get services
 ```
 
-Note, the exposed service port, like the Nginx pod. Open the URL to access the Java application.
+```
+student1@console1:~/bootcamp/kubernetes$ sudo kubectl get services
+NAME             TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)          AGE
+assets-manager   NodePort    10.96.25.160   <none>        9000:31171/TCP   44s
+kubernetes       ClusterIP   10.96.0.1      <none>        443/TCP          12m
+nginx            NodePort    10.96.53.91    <none>        8080:31034/TCP   9m37s
+```
+
+
+Note, the exposed service port, like the Nginx pod. Open the URL to access the Java application. For example
 
 ```
-http://console<n>.missionpeaktechnologies.com:<exposed-port>
+http://console1.missionpeaktechnologies.com:31171/
 ```
 
 

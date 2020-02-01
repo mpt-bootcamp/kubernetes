@@ -240,11 +240,6 @@ sudo kubectl delete pod <nginx-pod-name>
 sudo kubectl delete pod <assets-manager-pod-name>
 ```
 
-2. To delete the cluster,
-
-```console
-kops delete cluster student<n>.lab.missionpeaktechnologies.com
-```
 
 ### Conclusion
 

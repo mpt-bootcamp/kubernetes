@@ -63,10 +63,22 @@ In this lab, you will learn the basic operations of Helm.
 
 A chart repository is a server that houses packaged charts. Any HTTP server that can serve YAML files and tar files can be used as your private repository server. Helm does not provide tools for uploading charts to remote repository servers. 
 
+#### Need to add repo when using Helm in AWS VM
+
+```
+sudo helm repo add stable https://kubernetes-charts.storage.googleapis.com/
+```
+
+Otherwise you will get this error
+``
+student1@console1:~/bootcamp/kubernetes$ sudo helm search repo jenkins
+Error: no repositories configured
+```
+
 1. To show the default repo
 ```console
-helm repo list 
-helm env
+sudo helm repo list 
+sudo helm env
 ```
 You can add your own private repo using this command
 ```
@@ -75,8 +87,8 @@ helm repo add <repo-name> <http-url>
 
 2. To search for available charts,
 ```console
-helm search hub jenkins
-helm search repo jenkins
+sudo helm search hub jenkins
+sudo helm search repo jenkins
 ```
 
 Hub comprises charts from different repositories. Repo searches only the repositories you added, like your private repo.
@@ -86,7 +98,7 @@ Hub comprises charts from different repositories. Repo searches only the reposit
 ```console
 cd ~/bootcamp/kubernetes
 cd charts
-helm fetch --untar stable/jenkins jenkins
+sudo helm fetch --untar stable/jenkins jenkins
 tree
 ```
 
@@ -97,7 +109,7 @@ To install the downloaded Jenkins chart,
 ```console
 cd ~/bootcamp/kubernetes
 cd charts
-helm install jenkins ./jenkins
+sudo helm install jenkins ./jenkins
 ```
 
 5. To verify the install application is running
@@ -122,18 +134,18 @@ Login with the password (ex. dL9poZMXNL) from the first command and the username
 7. To list and get status of the installed application
 
 ```console
-helm list
-helm status jenkins
-helm history jenkins
+sudo helm list
+sudo helm status jenkins
+sudo helm history jenkins
 ```
 
 8. Uninstall an application
 
 ```console
-helm list
-helm uninstall jenkins
-helm list
-kubectl get pods
+sudo helm list
+sudo helm uninstall jenkins
+sudo helm list
+sudo kubectl get pods
 ```
 
 
@@ -146,7 +158,7 @@ Creating a new nginx chart using the customized mptbootcamp/nginx container imag
 cd ~/bootcamp/kubernetes
 mkdir -p charts
 cd charts
-helm create nginx
+sudo helm create nginx
 cd nginx
 tree
 ```
@@ -187,15 +199,19 @@ cp ~/bootcamp/kubernetes/nginx/service.yaml template/
 
 ```console
 cd ~/bootcamp/kubernetes/charts
-helm install nginx ./nginx
-helm list
-kubectl get pods
+sudo helm install nginx ./nginx
+sudo helm list
+sudo kubectl get pods
 ```
 
 5. Verify the install nginx pod is accessible.
 
 ```
-kubectl get svc
+student1@console1:~/bootcamp/kubernetes$ sudo kubectl get services
+NAME         TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
+kubernetes   ClusterIP   10.96.0.1       <none>        443/TCP          14m
+nginx        NodePort    10.96.151.155   <none>        8080:30924/TCP   89s
+```
 
 
 Create a new chart
@@ -255,5 +271,11 @@ helm uninstall myapp
 helm history myapp
 
 
+### Clean up
 
+1. To delete the cluster,
+
+```console
+kops delete cluster student<n>.lab.missionpeaktechnologies.com
+```
 
