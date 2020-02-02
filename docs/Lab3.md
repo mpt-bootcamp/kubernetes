@@ -79,7 +79,7 @@ Previewing changes that will be made:
 error doing DNS lookup for NS records for "lab.missionpeaktechnologies.com": lookup lab.missionpeaktechnologies.com on 192.168.200.201:53: no such host
 ```
 
-### Exercise 3 - Edit the Cluster, Master, and Worker Node Group Configuration
+### Exercise 3 (Optional) -  Edit the Cluster, Master, and Worker Node Group Configuration 
 
 After you create the custer configuration, you can edit the configuration before you spin up the cluster. 
 ```console
@@ -93,7 +93,7 @@ kops edit ig --name=student<n>.lab.missionpeaktechnologies.com --state=s3://mpt-
 Run the kops update command to create the cluster using the configuration object created. **NOTE**, you need to use sudo to escalate the privilege to create the cluster.
 
 ```console
-sudo kops update cluster student1.lab.missionpeaktechnologies.com --state=s3://mpt-kops --yes
+sudo kops update cluster student<n>.lab.missionpeaktechnologies.com --state=s3://mpt-kops --yes
 ```
 
 Cluster is starting. It should be ready in a few minutes (5 - 10 minutes).
