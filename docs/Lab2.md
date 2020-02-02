@@ -189,8 +189,10 @@ You should see the **STATUS** change Terminating, or not show up once it is term
 sudo kubectl get services 
 sudo kubectl delete service assets-manager
 sudo kubectl delete service nginx
+
+sudo kubectl delete deployment assets-manager
+sudo kubectl delete deployment nginx
 sudo kubectl get pods
-sudo kubectl delete pod <pod-name>
 ```
 
 ### Exercise 5 - Deleting the Local Minikube Cluster

@@ -62,6 +62,9 @@ cd ~/bootcamp/kubernetes
 
 
 ### Exercise 3 - Creating a Cluster Configuration
+
+**NOTE** to replace \<n\> with your assigned student number.
+
 ```console
 kops create cluster --name=student<n>.lab.missionpeaktechnologies.com --state=s3://mpt-kops --zones=us-east-1a
 ```
@@ -79,19 +82,19 @@ error doing DNS lookup for NS records for "lab.missionpeaktechnologies.com": loo
 
 ### Exercise 3 - Edit the Cluster, Master, and Worker Node Group Configuration
 
-After you create the custer configuration, you can edit the configuration before you spin up the cluster.
+After you create the custer configuration, you can edit the configuration before you spin up the cluster. 
 ```console
-kops edit cluster student1.lab.missionpeaktechnologies.com --state=s3://mpt-kops
-kops edit ig --name=student1.lab.missionpeaktechnologies.com --state=s3://mpt-kops nodes
-kops edit ig --name=student1.lab.missionpeaktechnologies.com --state=s3://mpt-kops master-us-east-1a
+kops edit cluster student<n>.lab.missionpeaktechnologies.com --state=s3://mpt-kops
+kops edit ig --name=student<n>.lab.missionpeaktechnologies.com --state=s3://mpt-kops nodes
+kops edit ig --name=student<n>.lab.missionpeaktechnologies.com --state=s3://mpt-kops master-us-east-1a
 ```
 
 ### Exercise 4 - Creating the AWS Cluster
 
-Run the kops update command to create the cluster using the configuration object created.
+Run the kops update command to create the cluster using the configuration object created. **NOTE**, you need to use sudo to escalate the privilege to create the cluster.
 
 ```console
-kops update cluster student1.lab.missionpeaktechnologies.com --state=s3://mpt-kops --yes
+sudo kops update cluster student1.lab.missionpeaktechnologies.com --state=s3://mpt-kops --yes
 ```
 Cluster is starting. It should be ready in a few minutes (2 - 10 minutes).
 
@@ -100,7 +103,7 @@ Cluster is starting. It should be ready in a few minutes (2 - 10 minutes).
 To validate the cluster is ready to use, run 
 
 ```console
-kops validate cluster --state=s3://mpt-kops
+sudo kops validate cluster --state=s3://mpt-kops
 ```
 
 You should see somethings like below while the cluster is creating.
@@ -154,8 +157,16 @@ Your cluster student1.lab.missionpeaktechnologies.com is ready
 
 1. Getting the cluster information
 ```console
-kubectl cluster-info
+sudo kubectl config get-contexts
+sudo kubectl config get-clusters
+sudo kubectl cluster-info
 ```
+
+If you have multiple clusters, you can use this command to switch. For example,
+```console
+sudo kubectl config use-context student1.lab.missionpeaktechnologies.com
+```
+
 **Example Output:**
 ```
 Kubernetes master is running at https://api.student1.lab.missionpeaktechnologies.com
@@ -164,7 +175,7 @@ KubeDNS is running at https://api.student1.lab.missionpeaktechnologies.com/api/v
 
 2. Getting the master and worker nodes information
 ```console
-kubectl get nodes
+sudo kubectl get nodes
 ```
 **Example Ouput:**
 ```
@@ -176,7 +187,7 @@ ip-172-20-60-65.ec2.internal    Ready    node     14m   v1.15.6
 
 3. Getting the running system pods of the cluster
 ```console
-kubectl -n kube-system get pods
+sudo kubectl -n kube-system get pods
 ```
 **Sample Output:**
 ```
@@ -203,6 +214,7 @@ kube-scheduler-ip-172-20-35-134.ec2.internal            1/1     Running   0     
 cd ~/bootcamp/kubernetes
 sudo kubectl create -f ./nginx/deployment.yaml
 sudo kubectl create -f ./nginx/service.yaml
+sudo kubectl create -f ./nginx/service-elb.yaml
 sudo kubectl get pods
 sudo kubectl get services
 ```
@@ -213,17 +225,31 @@ sudo kubectl get services
 cd ~/bootcamp/kubernetes
 sudo kubectl create -f ./assets-manager/deployment.yaml
 sudo kubectl create -f ./assets-manager/service.yaml
+sudo kubectl create -f ./assets-manager/service-elb.yaml
 sudo kubectl get pods
 sudo kubectl get services
 ```
 
 3. Accessing the Applications.
 
-Note the exposed port number from the ```sudo kubectl get services```. Open the URLs from the browser.
+Note the exposed port number from the ```sudo kubectl get services```. For example,
 
 ```
-http://console<n>.missionpeaktechnologies.com:<exposed-port-nginx>
-http://console<n>.missionpeaktechnologies.com:<exposed-port-assets-manager>
+student1@console1:~/bootcamp/kubernetes$ sudo kubectl get services
+NAME                 TYPE           CLUSTER-IP       EXTERNAL-IP                                                                     PORT(S)          AGE
+assets-manager       NodePort       100.64.254.102   <none>                                                                          9000:30907/TCP   38m
+assets-manager-elb   LoadBalancer   100.69.97.76     ad13c01588797498489de0eaa839d164-ed92c979af7613b2.elb.us-east-1.amazonaws.com   9000:31530/TCP   8s
+kubernetes           ClusterIP      100.64.0.1       <none>                                                                          443/TCP          47m
+nginx                NodePort       100.64.30.204    <none>                                                                          8080:32433/TCP   38m
+nginx-elb            LoadBalancer   100.66.154.18    ab97653e885ad4b4398c833d0d3c67c5-684d3571c9ae52a8.elb.us-east-1.amazonaws.com   80:31028/TCP     42s
+```
+
+
+Open the URLs from the browser for each of the ELBs. It will take up awhile for the AWS ELB DNS to propergate (~10 minutes). For example,
+
+```
+http://ab97653e885ad4b4398c833d0d3c67c5-684d3571c9ae52a8.elb.us-east-1.amazonaws.com
+http://ad13c01588797498489de0eaa839d164-ed92c979af7613b2.elb.us-east-1.amazonaws.com:9000
 ```
 
 ### Exercise 8 - Stopping Pods, Deleting Services and Cluster
@@ -234,12 +260,22 @@ Stopping and deleting the pods and serivces are no different than Minikube.
 ```console
 sudo kubectl get services 
 sudo kubectl delete service assets-manager
+sudo kubectl delete service assets-manager-elb
 sudo kubectl delete service nginx
+sudo kubectl delete service nginx-elb
+
+sudo kubectl delete deployment assets-manager
+sudo kubectl delete deployment nginx
 sudo kubectl get pods
-sudo kubectl delete pod <nginx-pod-name>
-sudo kubectl delete pod <assets-manager-pod-name>
 ```
 
+For example,
+```
+student1@console1:~/bootcamp/kubernetes$ sudo kubectl get pods
+NAME                              READY   STATUS        RESTARTS   AGE
+assets-manager-6455585c99-6z4qs   1/1     Terminating   0          5m31s
+nginx-664d65797b-q6jkd            1/1     Terminating   0          57m
+```
 
 ### Conclusion
 

@@ -213,6 +213,10 @@ kubernetes   ClusterIP   10.96.0.1       <none>        443/TCP          14m
 nginx        NodePort    10.96.151.155   <none>        8080:30924/TCP   89s
 ```
 
+```
+http://console1.missionpeaktechnologies.com:30924/
+```
+
 
 Create a new chart
 Install/uninstall a chart

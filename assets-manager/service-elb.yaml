@@ -1,0 +1,18 @@
+#service-elb.yaml
+kind: Service
+apiVersion: v1
+
+metadata:
+  name: assets-manager-elb
+  namespace: default
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
+
+spec:
+  type: LoadBalancer
+  selector:
+    app: assets-manager
+  ports:
+    - name: http
+      port: 9000
+      targetPort: 9000
