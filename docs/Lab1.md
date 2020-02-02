@@ -69,7 +69,9 @@ CMD /apps/nginx/bin/startup.sh
 2. With the Dockerfile created, run the following commands in the console terminal to create a Nginx container image and store it in the local repository.
 
 ```console
+mkdir ~/bootcamp
 cd ~/bootcamp/kubernetes
+sudo su
 docker build -t mptbootcamp/nginx ./nginx
 docker image ls -a
 docker history mptbootcamp/nginx
@@ -128,7 +130,7 @@ CMD /apps/nginx/bin/startup.sh
 Now open the URL to from the browser. For example,
 
 ```
-http://console1.missionpeaktechnologies.com:8080/
+http://console<n>.missionpeaktechnologies.com:8080/
 ```
 
 
@@ -201,7 +203,7 @@ docker container ls -a
 ```console
 docker container stop mptbootcamp/nginx
 docker container stop $(docker container ls -q)
-docker contaner rm mptbootcamp/nginx
+docker container rm mptbootcamp/nginx
 docker container prune -f
 ```
 
