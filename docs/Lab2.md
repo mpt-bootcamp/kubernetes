@@ -21,8 +21,8 @@ Once Minikube is installed you can use the command line interface (CLI) to
 ```console
 sudo minikube --help
 sudo minikube start -help
-sudo minkkube config --help
-sudo minkiube config set --help
+sudo minikube config --help
+sudo minikube config set --help
 ```
 
 2. To create or start a local cluster, 
@@ -139,7 +139,7 @@ nginx            NodePort    10.96.53.91    <none>        8080:31034/TCP   9m37s
 With the exposed port and the cluster IP, open the URL from the browser. For example
 
 ```
-http://console1.missionpeaktechnologies.com:31034/
+http://console<n>.missionpeaktechnologies.com:31034/
 ```
 
 
@@ -167,7 +167,7 @@ nginx            NodePort    10.96.53.91    <none>        8080:31034/TCP   9m37s
 Note, the exposed service port, like the Nginx pod. Open the URL to access the Java application. For example
 
 ```
-http://console1.missionpeaktechnologies.com:31171/
+http://console<n>.missionpeaktechnologies.com:31171/
 ```
 
 
