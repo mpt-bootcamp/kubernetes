@@ -125,11 +125,12 @@ In this case, it will run the command you specified when you build the image aft
 CMD /apps/nginx/bin/startup.sh
 ```
 
-Now open the URL to from the browser.
+Now open the URL to from the browser. For example,
 
 ```
-http://console<n>.missionpeaktechnologies.com:8080
+http://console1.missionpeaktechnologies.com:8080/
 ```
+
 
 3. Now run the dockerized Java application.
 ```
@@ -160,13 +161,14 @@ In this exercise, let's run a Jenkins container image in the public Docker Hub r
 
 ```conseole
 docker pull index.docker.io/jenkins
-docker run -d -p 8080:8080 -p 50000:50000 --name jenkings jenkins
+docker run -d -p 4040:8080 -p 50000:50000 --name jenkins jenkins
+docker logs jenkins
 ```
 
 Now, open the URL to connect to the Jenkins container.
 
 ```
-http://console<n>.missionpeaktechnologies.com:8080
+http://console<n>.missionpeaktechnologies.com:4040
 ```
 
 Note, on your console terminal, it will print the initial login password like below:

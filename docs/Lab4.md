@@ -280,6 +280,6 @@ helm history myapp
 1. To delete the cluster,
 
 ```console
-kops delete cluster student<n>.lab.missionpeaktechnologies.com
+kops delete cluster student<n>.lab.missionpeaktechnologies.com --state=s3://mpt-kops --yes
 ```
 
