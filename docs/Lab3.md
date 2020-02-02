@@ -34,10 +34,9 @@ PowerUserAccess
 ### Exercise 1 - Verifying the AWS Environment
 
 From you console terminal window, run 
-
+Note: If you are under root, please exit root by execute 'exit' command
 ```console
 cd ~/bootcamp/kubernetes
-
 aws ec2 describe-availability-zones --region us-east-1
 aws s3 ls s3://mpt-kops
 aws route53 list-hosted-zones-by-name
