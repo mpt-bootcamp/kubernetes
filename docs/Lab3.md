@@ -96,7 +96,8 @@ Run the kops update command to create the cluster using the configuration object
 ```console
 sudo kops update cluster student1.lab.missionpeaktechnologies.com --state=s3://mpt-kops --yes
 ```
-Cluster is starting. It should be ready in a few minutes (2 - 10 minutes).
+
+Cluster is starting. It should be ready in a few minutes (5 - 10 minutes).
 
 ### Exercise 5 - Validating the Created Cluster
 
@@ -129,10 +130,9 @@ The dns-controller Kubernetes deployment has not updated the Kubernetes cluster'
 
 Validation Failed
 
-It will take about 5-10 minutes for the cluster to be ready
 ```
 
-If the cluster is ready for use, it looks like below:
+It will take about 5-10 minutes for the cluster to be ready. If the cluster is ready for use, it looks like below:
 
 ```
 Using cluster from kubectl context: student1.lab.missionpeaktechnologies.com
@@ -232,7 +232,7 @@ sudo kubectl get services
 
 3. Accessing the Applications.
 
-Note the exposed port number from the ```sudo kubectl get services```. For example,
+Note the LoadBalancer URL from the ```sudo kubectl get services```. For example,
 
 ```
 student1@console1:~/bootcamp/kubernetes$ sudo kubectl get services
@@ -245,7 +245,7 @@ nginx-elb            LoadBalancer   100.66.154.18    ab97653e885ad4b4398c833d0d3
 ```
 
 
-Open the URLs from the browser for each of the ELBs. It will take up awhile for the AWS ELB DNS to propergate (~10 minutes). For example,
+Open the URLs from the browser for each of the LoadBalancer URLs. **NOTE** it will take a while for the AWS ELB DNS to propergate (~10 minutes). For example,
 
 ```
 http://ab97653e885ad4b4398c833d0d3c67c5-684d3571c9ae52a8.elb.us-east-1.amazonaws.com
