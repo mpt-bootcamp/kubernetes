@@ -1,14 +1,6 @@
 ## Lab4 - Using Helm for Packaging and Deployment
 
-https://developer.ibm.com/blogs/kubernetes-helm-3/
-https://github.com/alexellis/helm3-expressjs-tutorial
-https://helm.sh/docs/intro/using_helm/
-https://learnk8s.io/kubernetes-ingress-api-gateway
-https://github.com/IBM/helm101/tree/master/tutorial
-https://medium.com/@chkrishna/kubernetes-objects-e0a8b93b5cdc
-
-### https://medium.com/containerum/how-to-make-and-share-your-own-helm-package-50ae40f6c221
-
+In this lab, you will learn how to use Helm package and deploy container applications to both local (Minikube) and production (AWS) Kubernetes clusters
 
 Helm is a package manager and deployment tool for Kubernetes. With Helm,
 
@@ -53,17 +45,33 @@ In Lab 2 and 3, we use the ***create*** command to create the Nginx and the Java
 
 > kubectl create -f ./nginx/deployment.yaml
 > kubectl create -f ./nginx/service.yaml
+> kubectl create -f ./nginx/service-elb.yaml
 > kubectl create -f ./assets-manager/deployment.yaml
 > kubectl create -f ./assets-manager/service.yaml
+> kubectl create -f ./assets-manager/service-elb.yaml
 
 
-In this lab, you will learn the basic operations of Helm.
+Before we get started, let's ensure we have both the Minikube and Kops clusters running:
+
+```console
+sudo kubectl config get-clusters
+```
+
+If you aready deleted the Minikube from Lab2, you can recreate it back 
+
+```console
+sudo minikube start --vm-driver=none
+```
+
+We will start with the local Minikube cluster first by selecting it with this command
+```console
+sudo kubectl config use-cluster minikube
+```
+
 
 ### Exercise 1 - Using Helm Chart Repositories
 
 A chart repository is a server that houses packaged charts. Any HTTP server that can serve YAML files and tar files can be used as your private repository server. Helm does not provide tools for uploading charts to remote repository servers. 
-
-#### Need to add repo when using Helm in AWS VM
 
 ```
 sudo helm repo add stable https://kubernetes-charts.storage.googleapis.com/
@@ -223,7 +231,10 @@ Install/uninstall a chart
 
 
 
-
+If you have multiple clusters, you can use this command to switch. For example,
+```console
+sudo kubectl config use-context student1.lab.missionpeaktechnologies.com
+```
 
 
 

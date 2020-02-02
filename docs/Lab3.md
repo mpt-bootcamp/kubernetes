@@ -66,7 +66,7 @@ cd ~/bootcamp/kubernetes
 **NOTE** to replace \<n\> with your assigned student number.
 
 ```console
-kops create cluster --name=student<n>.lab.missionpeaktechnologies.com --state=s3://mpt-kops --zones=us-east-1a
+sudo kops create cluster --name=student<n>.lab.missionpeaktechnologies.com --state=s3://mpt-kops --zones=us-east-1a
 ```
 
 The output should look like below:
@@ -251,6 +251,10 @@ Open the URLs from the browser for each of the LoadBalancer URLs. **NOTE** it wi
 http://ab97653e885ad4b4398c833d0d3c67c5-684d3571c9ae52a8.elb.us-east-1.amazonaws.com
 http://ad13c01588797498489de0eaa839d164-ed92c979af7613b2.elb.us-east-1.amazonaws.com:9000
 ```
+
+
+
+
 
 ### Exercise 8 - Stopping Pods, Deleting Services and Cluster
 
