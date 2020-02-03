@@ -1,13 +1,13 @@
 ## Lab4 - Using Helm for Packaging and Deployment
 
-In this lab, you will learn how to use Helm package and deploy container applications to both local (Minikube) and production (AWS) Kubernetes clusters
+In this lab, you will learn how to use Helm to package and to deploy container applications to both local (Minikube) and production (AWS) Kubernetes clusters.
 
 Helm is a package manager and deployment tool for Kubernetes. With Helm,
 
-* There is no need to run individual ***create*** command to create Kubernetes Objects. 
+* There is no need to run individual command to create Kubernetes Objects. 
 * Enable revision management
-* Easy to create, update, and delete applications
-* Using templates to create objects for environment specific values
+* Easy to manage application lifecycle - install, update, scale up and down, and uninstall applications
+* Using templates to create complex and environment specific deployments
 
 
 A Helm chart is just a collection of files inside of a directory. For example,
@@ -26,7 +26,7 @@ nginx/
   templates/NOTES.txt # OPTIONAL: A plain text file containing short usage notes
 ```
 
-Kubernetes Objects are persistent entities in the cluster. These objects can be defined as a chart file/template to represent the state of the cluster. Some of the common Kubernetes Objects are:
+Kubernetes Objects are persistent entities in the cluster. These objects can be defined as chart files/templates to represent the state of the cluster. Some of the common Kubernetes Objects are:
 
 * Pod
 * Deployment
@@ -50,12 +50,104 @@ In Lab 2 and 3, we use the ***create*** command to create the Nginx and the Java
 > kubectl create -f ./assets-manager/service.yaml
 > kubectl create -f ./assets-manager/service-elb.yaml
 
+In this last lab, you will learn how to create the charts for the Nginx and Java Assets Manager applications and deploy them to both the local and production clusters.
+
+
+### Exercise 1 - Creating the Nginx chart.
+
+1. Creating a chart boilerplate
+```console
+cd ~/bootcamp/kubernetes
+mkdir -p charts
+cd charts
+sudo helm create nginx
+cd nginx
+rm -rf templates/*
+tree
+```
+
+2. Adding the deployment and service manifest chart files.
+
+Let's copy the manifest files we use in Lab 2 and Lab 3 instead of recreating them.
+
+```console
+cd ~/bootcamp/kubernetes/charts/nginx
+cp ~/bootcamp/kubernetes/nginx/*.yaml templates
+d ~/bootcamp/kubernetes/charts
+tree
+```
+
+The Nginx chart should look like this:
+
+```
+└── nginx
+    ├── Chart.yaml
+    ├── charts
+    ├── templates
+    │   ├── deployment.yaml
+    │   ├── service-elb.yaml
+    │   └── service.yaml
+    └── values.yaml
+```
+
+### Exercise 2 - Creating the Assets Manager chart.
+
+1. Creating a chart boilerplate
+```console
+cd ~/bootcamp/kubernetes/charts
+sudo helm create assets-manager
+cd assets-manager
+rm -rf templates/*
+tree
+```
+
+2. Adding the deployment and service manifest chart files.
+
+```console
+cd ~/bootcamp/kubernetes/charts/assets-manager
+cp ~/bootcamp/kubernetes/assets-manager/*.yaml templates
+cd ~/bootcamp/kubernetes/assets-manager
+tree
+```
+
+The chart should look like this:
+
+```
+└── assets-manager
+    ├── Chart.yaml
+    ├── charts
+    ├── templates
+    │   ├── deployment.yaml
+    │   ├── service-elb.yaml
+    │   └── service.yaml
+    └── values.yaml
+```
+
+### Exercise 3 - Deploying charts to a local Minikube cluster
+
+
+
+### Exercise 4 - Deploying charts to the Kops cluster
+
+
 
 Before we get started, let's ensure we have both the Minikube and Kops clusters running:
 
 ```console
-sudo kubectl config get-clusters
+sudo kubectl config get-contexts
 ```
+
+For example,
+
+```
+student1@console1:~/bootcamp/kubernetes$ sudo kubectl config get-contexts
+CURRENT   NAME                                       CLUSTER                                    AUTHINFO                                   NAMESPACE
+          minikube                                   minikube                                   minikube                                   
+*         student1.lab.missionpeaktechnologies.com   student1.lab.missionpeaktechnologies.com   student1.lab.missionpeaktechnologies.com   
+
+
+```
+**Note**: The asterisk (\*) indicates the current context or cluster.
 
 If you aready deleted the Minikube from Lab2, you can recreate it back 
 
@@ -63,11 +155,11 @@ If you aready deleted the Minikube from Lab2, you can recreate it back
 sudo minikube start --vm-driver=none
 ```
 
-We will start with the local Minikube cluster first by selecting it with this command
+Let's now select the Minikube cluster.
 ```console
-sudo kubectl config use-cluster minikube
+sudo kubectl config use-context minikube
+sudo kubectl cluster-info
 ```
-
 
 ### Exercise 1 - Using Helm Chart Repositories
 
@@ -101,12 +193,13 @@ sudo helm search repo jenkins
 
 Hub comprises charts from different repositories. Repo searches only the repositories you added, like your private repo.
 
-3. Download a chart a chart and unpack it in a local directory
+3. Download a public chart a chart and unpack it in a local directory
 
 ```console
 cd ~/bootcamp/kubernetes
 cd charts
-sudo helm fetch --untar stable/jenkins jenkins
+sudo rm -rf jenkins
+sudo helm fetch --untar stable/jenkins
 tree
 ```
 
@@ -123,23 +216,10 @@ sudo helm install jenkins ./jenkins
 5. To verify the install application is running
 
 ```console
-kubectl get pods
+sudo kubectl get pods
 ```
 
-
-
-6. To access the install Jenkins application, follow the instruction display on the console output like below
-
-```console
-printf $(kubectl get secret --namespace default jenkins -o jsonpath="{.data.jenkins-admin-password}" | base64 --decode);echo
-export POD_NAME=$(kubectl get pods --namespace default -l "app.kubernetes.io/component=jenkins-master" -l "app.kubernetes.io/instance=jenkins" -o jsonpath="{.items[0].metadata.name}")
-kubectl --namespace default port-forward $POD_NAME 8080:8080
-```
-
-Login with the password (ex. dL9poZMXNL) from the first command and the username: admin
-
-
-7. To list and get status of the installed application
+6. To list and get status of the installed application
 
 ```console
 sudo helm list
@@ -147,7 +227,7 @@ sudo helm status jenkins
 sudo helm history jenkins
 ```
 
-8. Uninstall an application
+7. Uninstall an application
 
 ```console
 sudo helm list
