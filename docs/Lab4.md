@@ -123,218 +123,175 @@ The chart should look like this:
     └── values.yaml
 ```
 
-### Exercise 3 - Deploying charts to a local Minikube cluster
+### Exercise 3 - Listing the running clusters
 
-
-
-### Exercise 4 - Deploying charts to the Kops cluster
-
-
-
-Before we get started, let's ensure we have both the Minikube and Kops clusters running:
-
+1. Listing the running clusters
 ```console
 sudo kubectl config get-contexts
 ```
 
-For example,
-
+The output should look like below. Note the asterisk (\*) next to the line indicates the current cluster.
 ```
-student1@console1:~/bootcamp/kubernetes$ sudo kubectl config get-contexts
+student1@console1:~$ sudo kubectl config get-contexts
 CURRENT   NAME                                       CLUSTER                                    AUTHINFO                                   NAMESPACE
           minikube                                   minikube                                   minikube                                   
 *         student1.lab.missionpeaktechnologies.com   student1.lab.missionpeaktechnologies.com   student1.lab.missionpeaktechnologies.com   
 
-
-```
-**Note**: The asterisk (\*) indicates the current context or cluster.
-
-If you aready deleted the Minikube from Lab2, you can recreate it back 
-
-```console
-sudo minikube start --vm-driver=none
 ```
 
-Let's now select the Minikube cluster.
+2. Selecting a running clster. 
 ```console
 sudo kubectl config use-context minikube
-sudo kubectl cluster-info
 ```
 
-### Exercise 1 - Using Helm Chart Repositories
-
-A chart repository is a server that houses packaged charts. Any HTTP server that can serve YAML files and tar files can be used as your private repository server. Helm does not provide tools for uploading charts to remote repository servers. 
+You should see the active cluster is now minikube. You can switch back and forth between clusters.
+```
+student1@console1:~$ sudo kubectl config get-contexts
+CURRENT   NAME                                       CLUSTER                                    AUTHINFO                                   NAMESPACE
+*         minikube                                   minikube                                   minikube                                   
+          student1.lab.missionpeaktechnologies.com   student1.lab.missionpeaktechnologies.com   student1.lab.missionpeaktechnologies.com   
 
 ```
-sudo helm repo add stable https://kubernetes-charts.storage.googleapis.com/
-```
 
-Otherwise you will get this error
-``
-student1@console1:~/bootcamp/kubernetes$ sudo helm search repo jenkins
-Error: no repositories configured
-```
+### Exercise 4 - Deploying charts to a local Minikube cluster
 
-1. To show the default repo
-```console
-sudo helm repo list 
-sudo helm env
-```
-You can add your own private repo using this command
-```
-helm repo add <repo-name> <http-url>
-```
-
-2. To search for available charts,
-```console
-sudo helm search hub jenkins
-sudo helm search repo jenkins
-```
-
-Hub comprises charts from different repositories. Repo searches only the repositories you added, like your private repo.
-
-3. Download a public chart a chart and unpack it in a local directory
-
-```console
-cd ~/bootcamp/kubernetes
-cd charts
-sudo rm -rf jenkins
-sudo helm fetch --untar stable/jenkins
-tree
-```
-
-4. Installing a chart
-
-To install the downloaded Jenkins chart,
-
-```console
-cd ~/bootcamp/kubernetes
-cd charts
-sudo helm install jenkins ./jenkins
-```
-
-5. To verify the install application is running
-
-```console
-sudo kubectl get pods
-```
-
-6. To list and get status of the installed application
-
-```console
-sudo helm list
-sudo helm status jenkins
-sudo helm history jenkins
-```
-
-7. Uninstall an application
-
-```console
-sudo helm list
-sudo helm uninstall jenkins
-sudo helm list
-sudo kubectl get pods
-```
-
-
-### Exercise 2 - Creating a new chart
-
-Creating a new nginx chart using the customized mptbootcamp/nginx container image.
-
-1. Create a chart folder with the boilerplate
-```console
-cd ~/bootcamp/kubernetes
-mkdir -p charts
-cd charts
-sudo helm create nginx
-cd nginx
-tree
-```
-
-The chart directory should like below:
-```
-├── Chart.yaml
-├── charts
-├── templates
-│   ├── NOTES.txt
-│   ├── _helpers.tpl
-│   ├── deployment.yaml
-│   ├── ingress.yaml
-│   ├── service.yaml
-│   ├── serviceaccount.yaml
-│   └── tests
-│       └── test-connection.yaml
-└── values.yaml
-```
-
-2. To keep thing simple, let delete the following unused manifest files 
-```console
-cd ~/bootcamp/kubernetes/charts/nginx
-rm templates/ingress.yaml
-rm templates/serviceaccount.yaml
-rm values.yaml
-```
-
-3. Replace the deployment and service manifest files we used in Lab 2 and 3 exercises.
-
-```console
-cd ~/bootcamp/kubernetes/charts/nginx
-cp ~/bootcamp/kubernetes/nginx/deployment.yaml template/
-cp ~/bootcamp/kubernetes/nginx/service.yaml template/
-```
-
-4. Install the new chart
+1. Installing the Nginx and Java Application chart
 
 ```console
 cd ~/bootcamp/kubernetes/charts
-sudo helm install nginx ./nginx
+sudo helm install nginx ./nginx/
+sudo helm install assets-manager ./assets-manager/
 sudo helm list
 sudo kubectl get pods
+sudo kubectl get services
 ```
 
-5. Verify the install nginx pod is accessible.
+2. Accessing the application
 
+To access the application on the Minikube, you need to obtain the mapping port number of either the NodePort or LoadBalancer. The IP address or hostname is your machine name.
+
+> http://console<\n\>.missionpeaktechnologies.com
+
+
+For example,
 ```
-student1@console1:~/bootcamp/kubernetes$ sudo kubectl get services
-NAME         TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
-kubernetes   ClusterIP   10.96.0.1       <none>        443/TCP          14m
-nginx        NodePort    10.96.151.155   <none>        8080:30924/TCP   89s
+student1@console1:~/bootcamp/kubernetes/charts$ sudo kubectl get services
+NAME                 TYPE           CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
+assets-manager       NodePort       10.96.107.179   <none>        9000:31171/TCP   20s
+assets-manager-elb   LoadBalancer   10.96.244.154   <pending>     80:31534/TCP     20s
+kubernetes           ClusterIP      10.96.0.1       <none>        443/TCP          63m
+nginx                NodePort       10.96.235.239   <none>        8080:30278/TCP   34m
+nginx-elb            LoadBalancer   10.96.152.227   <pending>     80:30895/TCP     34m
 ```
 
-```
-http://console1.missionpeaktechnologies.com:30924/
-```
+Open the URLs with your browser.
+
+**NodePort:**
+http://console1.missionpeaktechnologies.com:30278/
+http://console1.missionpeaktechnologies.com:31171/
+
+**LoadBalancer:**
+http://console1.missionpeaktechnologies.com:30895/
+http://console1.missionpeaktechnologies.com:31534/
 
 
-Create a new chart
-Install/uninstall a chart
+### Exercise 4 - Deploying charts to the Kops cluster
 
+Before deploying to the Kops cluster, you need to select the cluster. For example,
 
-
-If you have multiple clusters, you can use this command to switch. For example,
 ```console
 sudo kubectl config use-context student1.lab.missionpeaktechnologies.com
+sudo kubectl config get-contexts
+```
+
+```console
+cd ~/bootcamp/kubernetes/charts
+sudo helm install nginx ./nginx/
+sudo helm install assets-manager ./assets-manager/
+sudo helm list
+sudo kubectl get pods
+sudo kubectl get services
+```
+
+The output should show the services like below:
+
+```
+student1@console1:~/bootcamp/kubernetes/charts$ sudo kubectl get services
+NAME                 TYPE           CLUSTER-IP       EXTERNAL-IP                                                                     PORT(S)          AGE
+assets-manager       NodePort       100.70.95.191    <none>                                                                          9000:31143/TCP   79s
+assets-manager-elb   LoadBalancer   100.65.186.223   a2d3d11ed109b4b8f88ed76116c444b7-83d010f1460714a3.elb.us-east-1.amazonaws.com   80:32406/TCP     79s
+kubernetes           ClusterIP      100.64.0.1       <none>                                                                          443/TCP          41m
+nginx                NodePort       100.65.168.47    <none>                                                                          8080:30802/TCP   51s
+nginx-elb            LoadBalancer   100.69.56.202    a6c1c506c02014e1194cf2016f5268d3-35651e9a6d4b5e1f.elb.us-east-1.amazonaws.com   80:31901/TCP     51s
+```
+
+For the Kops, you should see the name of the LoadBalancer URLs created. It will the the public DNS few minutes to propergate. Open the URL with our browser.
+
+```
+http://a2d3d11ed109b4b8f88ed76116c444b7-83d010f1460714a3.elb.us-east-1.amazonaws.com
+http://a6c1c506c02014e1194cf2016f5268d3-35651e9a6d4b5e1f.elb.us-east-1.amazonaws.com
+```
+
+
+### Exercise 5 - Scaling up and down
+
+Now, let's edit the Assets Manager chart to use variable for the ***replicas** attribute in the deployment.yaml manifest.
+
+1. Parameterizing the manifest file.
+
+```console
+cd ~/bootcamp/kubernetes/charts/assets-manager
+```
+
+2. Edit template, template/deployment.yaml, and replace the line 
+
+>   replicas: 1 
+
+with
+
+>   replicas: {{ replicaCount}}
+
+```
+# deployment.yaml
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: nginx
+  namespace: default
+spec:
+  replicas: {{ replicaCount}}
+  selector:
+    matchLabels:
+      app: nginx
+
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: mptbootcamp/nginx:latest
+        ports:
+        - containerPort: 80
+```
+
+3. Create a variable file, value.yaml, with the variable below: 
+
+```
+replicaCount: 1
+```
+
+4. Now to scale up, run the following command
+
+```console
+cd ~/bootcamp/kubernetes/charts/
+sudo helm upgrade assets-manager ./assets-manager --set replicaCount=2
 ```
 
 
 
-
-Helm reserves use of the charts/, crds/, and templates/ directories, and of the listed file names
-
-https://helm.sh/docs/chart_template_guide/
-
-Exercise
-
-
-helm create myapp
-helm install myapp ./myapp --set service.type=NodePort
-helm list
-helm status myapp
-helm show all myapp
-helm get 
-helm get manifest myapp
-helm history myapp
-
+### Exercise 6 - Cleaning up
 
 kubectl get deployment
 kubectl get services
@@ -366,7 +323,7 @@ helm uninstall myapp
 helm history myapp
 
 
-### Clean up
+
 
 1. To delete the cluster,
 
