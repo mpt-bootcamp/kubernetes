@@ -249,7 +249,7 @@ cd ~/bootcamp/kubernetes/charts/assets-manager
 
 with
 
->   replicas: {{ replicaCount}}
+>   replicas: {{ .Values.replicaCount }}
 
 ```
 # deployment.yaml
@@ -259,7 +259,7 @@ metadata:
   name: nginx
   namespace: default
 spec:
-  replicas: {{ replicaCount}}
+  replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
       app: nginx
@@ -276,58 +276,62 @@ spec:
         - containerPort: 80
 ```
 
-3. Create a variable file, value.yaml, with the variable below: 
-
-```
-replicaCount: 1
-```
-
-4. Now to scale up, run the following command
+3. Now to scale up, run the following command
 
 ```console
 cd ~/bootcamp/kubernetes/charts/
-sudo helm upgrade assets-manager ./assets-manager --set replicaCount=2
+sudo helm upgrade assets-manager ./assets-manager --set replicaCount=3
 ```
 
+4. Checking the new replicas
 
+```
+sudo kubectl get pods
+```
+
+You should see 3 pods for the assets-manager now
+```
+NAME                              READY   STATUS    RESTARTS   AGE
+assets-manager-7466dcd895-4zb9w   1/1     Running   0          115s
+assets-manager-7466dcd895-lw9zj   1/1     Running   0          39m
+assets-manager-7466dcd895-mk6g9   1/1     Running   0          115s
+nginx-68b9c474d8-bg6rp            1/1     Running   0          74m
+```
+
+5. Drain the number of pod to zero (0)
+
+```
+cd ~/bootcamp/kubernetes/charts/
+sudo helm upgrade assets-manager ./assets-manager --set replicaCount=0
+sudo kubectl get pods
+```
+
+**Output:**
+```
+assets-manager-7466dcd895-4zb9w   1/1     Terminating   0          5m12s
+assets-manager-7466dcd895-lw9zj   1/1     Terminating   0          42m
+assets-manager-7466dcd895-mk6g9   1/1     Terminating   0          5m12s
+nginx-68b9c474d8-bg6rp            1/1     Running       0          77m
+
+```
 
 ### Exercise 6 - Cleaning up
 
-kubectl get deployment
-kubectl get services
-kubectl get pods
-helm upgrade myapp ./myapp --version=1.1 --set replicaCount=2 --set service.type=LoadBalancer
-kubectl history myapp
-kubectl get serivces
-kubectl get pods
-helm upgrade myapp ./myapp --version=1.2 --set replicaCount=3 --set service.type=LoadBalancer
-
-```
-kubectl get pods
-NAME                     READY   STATUS    RESTARTS   AGE
-myapp-7f7f5c7b6f-99bhf   1/1     Running   0          28m
-myapp-7f7f5c7b6f-ggffz   1/1     Running   0          43s
-myapp-7f7f5c7b6f-srmmr   1/1     Running   0          7m3s
-```
-
-helm upgrade myapp ./myapp --version=1.3 --set replicaCount=1 --set service.type=LoadBalancer
-kubectl get pods
-helm history
-helm rollback myapp <revision>
-helm get pods
-kubectl scale --replicas=0 deployment/myapp
-helm list
-kubectl scale --replicas=1 deployment/myapp
-helm history myapp
-helm uninstall myapp
-helm history myapp
-
-
-
-
-1. To delete the cluster,
+Now we see how to deploy charts to Kuberetes clusters. In this exercise, we will perform the clean up.
 
 ```console
-kops delete cluster student<n>.lab.missionpeaktechnologies.com --state=s3://mpt-kops --yes
+cd ~/bootcamp/kubernetes/charts/
+sudo helm list
+sudo helm uninstall nginx
+sudo helm uninstall assets-manager
+sudo kubectl get services
+sudo kubectl get pods
+```
+
+We will skip the uninstall on Minikube. For this Bootcamp, we need to delete the clusters with this command. MAKE SURE you use your assigned student number.
+
+```console
+sudo minikube delete
+sudo kops delete cluster student<n>.lab.missionpeaktechnologies.com --state=s3://mpt-kops --yes
 ```
 
