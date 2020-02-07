@@ -5,7 +5,7 @@ metadata:
   name: assets-manager
   namespace: default
 spec:
-  replicas: {{ replicaCount }}
+  replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
       app: assets-manager
