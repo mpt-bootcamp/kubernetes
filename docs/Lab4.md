@@ -62,7 +62,7 @@ mkdir -p charts
 cd charts
 sudo helm create nginx
 cd nginx
-rm -rf templates/*
+sudo rm -rf templates/*
 tree
 ```
 
@@ -73,7 +73,7 @@ Let's copy the manifest files we use in Lab 2 and Lab 3 instead of recreating th
 ```console
 cd ~/bootcamp/kubernetes/charts/nginx
 cp ~/bootcamp/kubernetes/nginx/*.yaml templates
-d ~/bootcamp/kubernetes/charts
+cd ~/bootcamp/kubernetes/charts
 tree
 ```
 
@@ -97,7 +97,7 @@ The Nginx chart should look like this:
 cd ~/bootcamp/kubernetes/charts
 sudo helm create assets-manager
 cd assets-manager
-rm -rf templates/*
+sudo rm -rf templates/*
 tree
 ```
 
