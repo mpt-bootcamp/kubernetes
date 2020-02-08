@@ -33,6 +33,7 @@ Now, let's see how to dockerize Nginx that you deployed and how to run it inside
 1. From your console machine's terminal window, download the Kubernetes project and use the prepare exercise files so we can save time writing them in class.
 
 ```console
+mkdir ~/bootcamp
 cd ~/bootcamp/
 git clone https://github.com/mpt-bootcamp/kubernetes.git
 cd kubernetes
@@ -69,7 +70,6 @@ CMD /apps/nginx/bin/startup.sh
 2. With the Dockerfile created, run the following commands in the console terminal to create a Nginx container image and store it in the local repository.
 
 ```console
-mkdir ~/bootcamp
 cd ~/bootcamp/kubernetes
 sudo su
 docker build -t mptbootcamp/nginx ./nginx
