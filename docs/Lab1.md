@@ -71,7 +71,6 @@ CMD /apps/nginx/bin/startup.sh
 
 ```console
 cd ~/bootcamp/kubernetes
-sudo su
 docker build -t mptbootcamp/nginx ./nginx
 docker image ls -a
 docker history mptbootcamp/nginx
